@@ -12,6 +12,18 @@ screen = display.set_mode((160,160))
 # Main Loop Exit
 Exit_Now = False
 
+# Set up GPIO if on Raspberry
+On_Raspberry = False
+if On_Raspberry:
+    import RPi.GPIO as GPIO
+    GPIO.setmode(GPIO.BOARD)
+    B_L=16
+    R_R=12
+    GPIO.setup(B_L,GPIO.IN,pull_up_down=GPIO.PUD_UP)
+    GPIO.setup(R_R,GPIO.IN,pull_up_down=GPIO.PUD_UP)
+    B_L_Status = 1
+    R_R_Status = 1
+
 # Default Alarm Setting
 Alarm_On = True
 Alarm_Hour = 11
@@ -24,7 +36,7 @@ Alarm_Playing = False
 Alarm_Sample = False
 Alarm_Duration = 1 #how long the Alarm will run before shutting itself off
 
-# Default Soundbox setings
+# Default Soundbox settings
 SBox_Sound = 1
 SBox_Volume = 3
 SBox_Duration = 2
@@ -80,6 +92,33 @@ while not Exit_Now:
                 New_Input = "Short"
 
             Menu_Revert_Time = datetime.datetime.now() + TimeStamp_Check
+
+    ## Button capture for Raspberry
+    if On_Raspberry == True:
+        if GPIO.input(B_L) != B_L_Status:
+            if GPIO.input(B_L) == 0:
+                B_L_PressTime = dt.datetime.now()
+            else:
+                B_L_Duration = dt.datetime.now() - B_L_PressTime
+                Key_Press = "L"
+                print("L")
+                if B_L_Duration > dt.timedelta(seconds=1):
+                    New_Input = "Long"
+                else:
+                    New_Input = "Short"
+                print(New_Input)
+        if GPIO.input(R_R) != R_R_Status:
+            if GPIO.input(R_R) == 0:
+                R_R_PressTime = dt.datetime.now()
+            else:
+                R_R_Duration = dt.datetime.now() - R_R_PressTime
+                Key_Press = "R"
+                print("R")
+                if R_R_Duration > dt.timedelta(seconds=1):
+                    New_Input = "Long"
+                else:
+                    New_Input = "Short"
+                print(New_Input)
 
     ## Calculate the Alarm time
     if datetime.time(Alarm_Hour, Alarm_Minute,0).strftime('%H:%M') < datetime.datetime.now().strftime('%H:%M'):
@@ -297,7 +336,9 @@ while not Exit_Now:
         else:  # Volume Fade In
             mixer.music.set_volume(min(Alarm_Volume/5.0,(datetime.datetime.now()-Alarm_Start_Time).seconds/10.))
 
-
+    if On_Raspberry == True: ## For button capture
+        B_L_Status = GPIO.input(B_L)
+        R_R_Status = GPIO.input(R_R)
 
 mixer.music.load(Sound_List[0])
 mixer.music.play(1)
