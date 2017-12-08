@@ -1,7 +1,9 @@
+
 import datetime
 import time as tm
 from pygame import *
 import os, sys
+import RPi.GPIO as GPIO
 
 
 init()
@@ -13,9 +15,8 @@ screen = display.set_mode((160,160))
 Exit_Now = False
 
 # Set up GPIO if on Raspberry
-On_Raspberry = False
+On_Raspberry = True
 if On_Raspberry:
-    import RPi.GPIO as GPIO
     GPIO.setmode(GPIO.BOARD)
     B_L=16
     R_R=12
@@ -65,60 +66,63 @@ print("Display Off")
 
 ## Initiate loop
 while not Exit_Now:
-
+    t1 = datetime.datetime.now()
     ## pygame event loop to capture inputs
-    for e in event.get():
+    if On_Rasberry == False:
+    	for e in event.get():
+        	## Log the key that was pressed
+        	if e.type == KEYDOWN:
+            		Key_Down_Stamp = datetime.datetime.now()
+            	# print(Key_Down_Stamp)
+            	if (e.key == K_UP):
+                	# print ("U")
+                	Key_Press = "U"
+                	Exit_Now = True
+            	elif (e.key == K_LEFT):
+                	Key_Press = "L"
+                	# print("L")
+            	elif (e.key == K_RIGHT):
+                	Key_Press = "R"
+                	# print("R")
 
-        ## Log the key that was pressed
-        if e.type == KEYDOWN:
-            Key_Down_Stamp = datetime.datetime.now()
-            # print(Key_Down_Stamp)
-            if (e.key == K_UP):
-                # print ("U")
-                Key_Press = "U"
-                Exit_Now = True
-            elif (e.key == K_LEFT):
-                Key_Press = "L"
-                # print("L")
-            elif (e.key == K_RIGHT):
-                Key_Press = "R"
-                # print("R")
+        	## Deterimine if it is a short or long press
+        	if e.type == KEYUP:
+            	if (datetime.datetime.now() - Key_Down_Stamp)  > datetime.timedelta(seconds=1):
+                	New_Input = "Long"
+            	else:
+                	New_Input = "Short"
 
-        ## Deterimine if it is a short or long press
-        if e.type == KEYUP:
-            if (datetime.datetime.now() - Key_Down_Stamp)  > datetime.timedelta(seconds=1):
-                New_Input = "Long"
-            else:
-                New_Input = "Short"
-
-            Menu_Revert_Time = datetime.datetime.now() + TimeStamp_Check
+            	Menu_Revert_Time = datetime.datetime.now() + TimeStamp_Check
 
     ## Button capture for Raspberry
     if On_Raspberry == True:
         if GPIO.input(B_L) != B_L_Status:
             if GPIO.input(B_L) == 0:
-                B_L_PressTime = dt.datetime.now()
+                B_L_PressTime = datetime.datetime.now()
             else:
-                B_L_Duration = dt.datetime.now() - B_L_PressTime
+                B_L_Duration = datetime.datetime.now() - B_L_PressTime
                 Key_Press = "L"
                 print("L")
-                if B_L_Duration > dt.timedelta(seconds=1):
+                if B_L_Duration > datetime.timedelta(seconds=1):
                     New_Input = "Long"
                 else:
                     New_Input = "Short"
                 print(New_Input)
+		Menu_Revert_Time = datetime.datetime.now() + TimeStamp_Check
         if GPIO.input(R_R) != R_R_Status:
             if GPIO.input(R_R) == 0:
-                R_R_PressTime = dt.datetime.now()
+                R_R_PressTime = datetime.datetime.now()
             else:
-                R_R_Duration = dt.datetime.now() - R_R_PressTime
+                R_R_Duration = datetime.datetime.now() - R_R_PressTime
                 Key_Press = "R"
                 print("R")
-                if R_R_Duration > dt.timedelta(seconds=1):
+                if R_R_Duration > datetime.timedelta(seconds=1):
                     New_Input = "Long"
                 else:
                     New_Input = "Short"
                 print(New_Input)
+	    	Menu_Revert_Time = datetime.datetime.now() + TimeStamp_Check
+
 
     ## Calculate the Alarm time
     if datetime.time(Alarm_Hour, Alarm_Minute,0).strftime('%H:%M') < datetime.datetime.now().strftime('%H:%M'):
@@ -340,6 +344,9 @@ while not Exit_Now:
         B_L_Status = GPIO.input(B_L)
         R_R_Status = GPIO.input(R_R)
 
+    t2 = datetime.datetime.now()
+#    print (t2-t1)
+	
 mixer.music.load(Sound_List[0])
 mixer.music.play(1)
 tm.sleep(1)
