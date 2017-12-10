@@ -23,8 +23,8 @@ if On_Raspberry:
     R_R = 12
     GPIO.setup(B_L, GPIO.IN, pull_up_down=GPIO.PUD_UP)
     GPIO.setup(R_R, GPIO.IN, pull_up_down=GPIO.PUD_UP)
-    GPIO.add_event_detect(16, GPIO_BOTH)
-    GPIO.add_event_detect(12, GPIO_BOTH)
+    GPIO.add_event_detect(16, GPIO.BOTH)
+    GPIO.add_event_detect(12, GPIO.BOTH)
     B_L_Status = 1
     R_R_Status = 1
 
@@ -70,7 +70,7 @@ print("Display Off")
 while not Exit_Now:
     t1 = datetime.datetime.now()
     ## pygame event loop to capture inputs
-    if On_Raspberry == False:
+    if True:
         for e in event.get():
             print(e.type)
             print (e.key)
