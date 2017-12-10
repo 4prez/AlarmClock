@@ -23,8 +23,11 @@ if On_Raspberry:
     R_R = 12
     GPIO.setup(B_L, GPIO.IN, pull_up_down=GPIO.PUD_UP)
     GPIO.setup(R_R, GPIO.IN, pull_up_down=GPIO.PUD_UP)
+    GPIO.add_event_detect(16, GPIO_BOTH)
+    GPIO.add_event_detect(12, GPIO_BOTH)
     B_L_Status = 1
     R_R_Status = 1
+
 
 # Default Alarm Setting
 Alarm_On = True
@@ -69,6 +72,8 @@ while not Exit_Now:
     ## pygame event loop to capture inputs
     if On_Raspberry == False:
         for e in event.get():
+            print(e.type)
+            print (e.key)
             ## Log the key that was pressed
             if e.type == KEYDOWN:
                 Key_Down_Stamp = datetime.datetime.now()
@@ -93,34 +98,34 @@ while not Exit_Now:
 
                 Menu_Revert_Time = datetime.datetime.now() + TimeStamp_Check
 
-    ## Button capture for Raspberry
-    if On_Raspberry == True:
-        if GPIO.input(B_L) != B_L_Status:
-            if GPIO.input(B_L) == 0:
-                B_L_PressTime = datetime.datetime.now()
-            else:
-                B_L_Duration = datetime.datetime.now() - B_L_PressTime
-                Key_Press = "L"
-                print("L")
-                if B_L_Duration > datetime.timedelta(seconds=1):
-                    New_Input = "Long"
-                else:
-                    New_Input = "Short"
-                print(New_Input)
-        Menu_Revert_Time = datetime.datetime.now() + TimeStamp_Check
-        if GPIO.input(R_R) != R_R_Status:
-            if GPIO.input(R_R) == 0:
-                R_R_PressTime = datetime.datetime.now()
-            else:
-                R_R_Duration = datetime.datetime.now() - R_R_PressTime
-                Key_Press = "R"
-                print("R")
-                if R_R_Duration > datetime.timedelta(seconds=1):
-                    New_Input = "Long"
-                else:
-                    New_Input = "Short"
-                print(New_Input)
-            Menu_Revert_Time = datetime.datetime.now() + TimeStamp_Check
+    # ## Button capture for Raspberry
+    # if On_Raspberry == True:
+    #     if GPIO.input(B_L) != B_L_Status:
+    #         if GPIO.input(B_L) == 0:
+    #             B_L_PressTime = datetime.datetime.now()
+    #         else:
+    #             B_L_Duration = datetime.datetime.now() - B_L_PressTime
+    #             Key_Press = "L"
+    #             print("L")
+    #             if B_L_Duration > datetime.timedelta(seconds=1):
+    #                 New_Input = "Long"
+    #             else:
+    #                 New_Input = "Short"
+    #             print(New_Input)
+    #     Menu_Revert_Time = datetime.datetime.now() + TimeStamp_Check
+    #     if GPIO.input(R_R) != R_R_Status:
+    #         if GPIO.input(R_R) == 0:
+    #             R_R_PressTime = datetime.datetime.now()
+    #         else:
+    #             R_R_Duration = datetime.datetime.now() - R_R_PressTime
+    #             Key_Press = "R"
+    #             print("R")
+    #             if R_R_Duration > datetime.timedelta(seconds=1):
+    #                 New_Input = "Long"
+    #             else:
+    #                 New_Input = "Short"
+    #             print(New_Input)
+    #         Menu_Revert_Time = datetime.datetime.now() + TimeStamp_Check
 
     ## Calculate the Alarm time
     if datetime.time(Alarm_Hour, Alarm_Minute, 0).strftime('%H:%M') < datetime.datetime.now().strftime('%H:%M'):
