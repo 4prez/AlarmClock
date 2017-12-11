@@ -3,10 +3,16 @@ import time as tm
 from pygame import *
 import os, sys
 
+On_Raspberry = not (sys.platform == 'win32') # determine if running on Windows or Pi (for inputs)
+# Set up GPIO if on Raspberry
+print(On_Raspberry)
+
 init()
 # set SDL to use the dummy NULL video driver, so it doesn't need a windowing system.
 os.environ["SDL_VIDEODRIVER"] = "dummy"
 screen = display.set_mode((160, 160))
+
+print ("Pygame Initialized")
 
 # Default Alarm Setting
 Alarm_On = True
@@ -35,6 +41,8 @@ Sound_List = ["Rain_thunder.mp3", "Sleeping-sounds.mp3", "260263__richardemoore_
               "262305__gowlermusic__summer-outside-ambience.mp3", "253770__corsica-s__forest-fire.mp3"]
 Fade_Out_ms = 1000  # In milliseconds
 
+print ("Sound files loaded")
+
 # Initiate key press variables / flags
 New_Input = False
 Key_Press = "None"
@@ -42,9 +50,6 @@ Key_TimeStamp = dt.datetime.now()
 Key_Down_Stamp = dt.datetime(1970, 1, 1, 0, 0, 0, 0)
 TimeStamp_Check = dt.timedelta(seconds=6)  # inactive time for menu level reversion
 
-# Set up GPIO if on Raspberry
-On_Raspberry = not (sys.platform == 'win32') # determine if running on Windows or Pi (for inputs)
-print(On_Raspberry)
 if On_Raspberry:
     import RPi.GPIO as GPIO
     GPIO.setmode(GPIO.BOARD)
@@ -69,18 +74,19 @@ if On_Raspberry:
                 New_Input = "Long"
             else:
                 New_Input = "Short"
-            Menu_Revert_Time = datetime.datetime.now() + TimeStamp_Check
+            Menu_Revert_Time = dt.datetime.now() + TimeStamp_Check
         else:
             Key_Down_Stamp = dt.datetime.now()
 
     GPIO.add_event_detect(B_L, GPIO.BOTH, callback=callback_button)
     GPIO.add_event_detect(R_R, GPIO.BOTH, callback=callback_button)
 
-
+print("Raspberry GPIO setup as resquired")
 
 ## Initiate loop
 Exit_Now = False
 State = 0
+
 print("Display Off")
 
 while not Exit_Now:
@@ -337,4 +343,4 @@ mixer.music.play(1)
 tm.sleep(1)
 
 if On_Raspberry == True:
-    RPIO.cleanup()
+    GPIO.cleanup()
