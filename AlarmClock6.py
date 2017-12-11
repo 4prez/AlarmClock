@@ -1,7 +1,8 @@
 import datetime as dt
-import time as tm
 from pygame import *
-import os, sys
+from time import sleep
+from os import environ
+import sys
 
 On_Raspberry = not (sys.platform == 'win32') # determine if running on Windows or Pi (for inputs)
 # Set up GPIO if on Raspberry
@@ -9,7 +10,7 @@ print(On_Raspberry)
 
 init()
 # set SDL to use the dummy NULL video driver, so it doesn't need a windowing system.
-os.environ["SDL_VIDEODRIVER"] = "dummy"
+environ["SDL_VIDEODRIVER"] = "dummy"
 screen = display.set_mode((160, 160))
 
 print ("Pygame Initialized")
@@ -340,7 +341,7 @@ while not Exit_Now:
 
 mixer.music.load(Sound_List[0])
 mixer.music.play(1)
-tm.sleep(1)
+sleep(1)
 
 if On_Raspberry == True:
     GPIO.cleanup()
