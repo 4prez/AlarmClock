@@ -1,7 +1,8 @@
 import datetime as dt
 from pygame import *
 from time import sleep
-from os import environ
+# from os import environ
+import os
 import sys
 
 On_Raspberry = not (sys.platform == 'win32') # determine if running on Windows or Pi (for inputs)
@@ -10,7 +11,7 @@ print(On_Raspberry)
 
 init()
 # set SDL to use the dummy NULL video driver, so it doesn't need a windowing system.
-environ["SDL_VIDEODRIVER"] = "dummy"
+os.environ["SDL_VIDEODRIVER"] = "dummy"
 screen = display.set_mode((160, 160))
 
 print ("Pygame Initialized")
@@ -37,9 +38,30 @@ SBox_End_Time = SBox_Start_Time + dt.timedelta(minutes=SBox_Duration)
 SBox_Playing = False
 
 # Sound files
-# List of sound files (same for Alarm and Soudbox), need to be in the same directory as py file
-Sound_List = ["Rain_thunder.mp3", "Sleeping-sounds.mp3", "260263__richardemoore__wavesontheshore.mp3",
-              "262305__gowlermusic__summer-outside-ambience.mp3", "253770__corsica-s__forest-fire.mp3"]
+# List of sound files (same for Alarm and Soundbox), need to be in the same directory as py file
+# https://www.youtube.com/watch?v=C-t0nZ_8HeE
+
+Sound_List =[]
+SoundBox_Path = (os.path.join(os.getcwd(),"Soundbox Sounds"))
+for files in os.listdir(SoundBox_Path):
+    if files.endswith(".mp3"):
+        print(files)
+        Sound_List.append(files)
+print(Sound_List)
+print (len(Sound_List))
+
+Alarm_List =[]
+Alarm_Path = (os.path.join(os.getcwd(),"Alarm Sounds"))
+for files in os.listdir(Alarm_Path):
+    if files.endswith(".mp3"):
+        print(files)
+        Alarm_List.append(files)
+print(Alarm_List)
+print(len(Alarm_List))
+
+# Sound_List = ["Rain_thunder.mp3", "Sleeping-sounds.mp3", "260263__richardemoore__wavesontheshore.mp3",
+#               "262305__gowlermusic__summer-outside-ambience.mp3", "253770__corsica-s__forest-fire.mp3"]
+
 Fade_Out_ms = 1000  # In milliseconds
 
 print ("Sound files loaded")
@@ -149,22 +171,22 @@ while not Exit_Now:
         if State == 1:
             State = 0
             print("Display Off")
-        elif (State > 10 or State == 6):  #
+        elif State >1: #(State > 10 or State == 6): # For old revert ladder
             State = 1
             print(dt.datetime.now().strftime('%H:%M'))
             Menu_Revert_Time = dt.datetime.now() + TimeStamp_Check
-        elif State > 1:
-            Key_Press = "L"
-            # print("L-Delay")
-            Menu_Revert_Time = dt.datetime.now() + TimeStamp_Check
-            State = State - 2
-            New_Input = "Short"
+        # elif State > 1:  # For old revert ladder
+        #     Key_Press = "L"
+        #     # print("L-Delay")
+        #     Menu_Revert_Time = dt.datetime.now() + TimeStamp_Check
+        #     State = State - 2
+        #     New_Input = "Short"
 
     ## Long key escape actions
     if New_Input == "Long":
         if Key_Press == "L":
             if State > 4 and State < 10:
-                mixer.music.load(Sound_List[Alarm_Sound - 1])
+                mixer.music.load(os.path.join(Alarm_Path,Alarm_List[Alarm_Sound - 1]))
                 mixer.music.set_volume(Alarm_Volume / 5.)
                 mixer.music.play(-1)
                 Alarm_Sample = True
@@ -174,7 +196,7 @@ while not Exit_Now:
                 if SBox_Playing:
                     mixer.music.stop()
                 else:
-                    mixer.music.load(Sound_List[SBox_Sound - 1])
+                    mixer.music.load(os.path.join(SoundBox_Path,Sound_List[SBox_Sound - 1]))
                     mixer.music.set_volume(SBox_Volume / 5.)
                     mixer.music.play(-1)
                     SBox_Playing = True
@@ -241,12 +263,12 @@ while not Exit_Now:
 
         elif State == 5:  # Edit Sound
             if Key_Press == "R":
-                if Alarm_Sound == 5:
+                if Alarm_Sound == len(Alarm_List):
                     Alarm_Sound = 1
                 else:
                     Alarm_Sound = Alarm_Sound + 1
                 if Alarm_Sample:
-                    mixer.music.load(Sound_List[Alarm_Sound - 1])
+                    mixer.music.load(Alarm_List[Alarm_Sound - 1])
                     mixer.music.set_volume(Alarm_Volume / 5.)
                     mixer.music.play(-1)
                 print("Alarm sound", Alarm_Sound)
@@ -278,12 +300,12 @@ while not Exit_Now:
 
         elif State == 11:  # Soundbox Sound
             if Key_Press == "R":
-                if SBox_Sound == 5:
+                if SBox_Sound == len(Sound_List):
                     SBox_Sound = 1
                 else:
                     SBox_Sound = SBox_Sound + 1
                 print("Soundbox sound", SBox_Sound)
-                mixer.music.load(Sound_List[SBox_Sound - 1])
+                mixer.music.load(os.path.join(SoundBox_Path, Sound_List[SBox_Sound - 1]))
                 mixer.music.set_volume(SBox_Volume / 5.)
                 mixer.music.play(-1)
                 SBox_Start_Time = dt.datetime.now()
@@ -326,7 +348,7 @@ while not Exit_Now:
         if not Alarm_Playing:
             if dt.datetime.now() > Alarm_DateTime:
                 print("Alarm Playing")
-                mixer.music.load(Sound_List[Alarm_Sound - 1])
+                mixer.music.load(os.path.join(Alarm_Path, Alarm_List[Alarm_Sound - 1]))
                 mixer.music.set_volume(0)
                 mixer.music.play(-1)
                 Alarm_Start_Time = dt.datetime.now()
@@ -339,7 +361,7 @@ while not Exit_Now:
         B_L_Status = GPIO.input(B_L)
         R_R_Status = GPIO.input(R_R)
 
-mixer.music.load(Sound_List[0])
+mixer.music.load(os.path.join(SoundBox_Path,Sound_List[0]))
 mixer.music.play(1)
 sleep(1)
 
