@@ -9,6 +9,30 @@ On_Raspberry = not (sys.platform == 'win32') # determine if running on Windows o
 # Set up GPIO if on Raspberry
 print(On_Raspberry)
 
+if On_Raspberry:
+    from Adafruit_LED_Backpack import SevenSegment
+    display = SevenSegment.SevenSegment()
+    display.begin()
+    display.clear()
+    display.write_Display()
+    print("SevenSegment Display Initiated")
+
+def DispPrint(disptext,rt_coln = True,lt_coln = False,dec = False):
+    global On_Raspberry
+    print(disptext,rt_coln,lt_coln,dec)
+    if On_Raspberry:
+        if disptext == "clear":
+            display.print_float(disptext)
+        else:
+            display.clear()
+        display.write_display()
+
+DispPrint (12)
+
+sleep(3)
+
+DispPrint ("clear")
+
 init()
 # set SDL to use the dummy NULL video driver, so it doesn't need a windowing system.
 os.environ["SDL_VIDEODRIVER"] = "dummy"
@@ -17,9 +41,9 @@ screen = display.set_mode((160, 160))
 print ("Pygame Initialized")
 
 # Default Alarm Setting
-Alarm_On = True
-Alarm_Hour = 11
-Alarm_Minute = 37
+Alarm_On = False
+Alarm_Hour = 6
+Alarm_Minute = 30
 Alarm_Minute_Increment = 5  # how much the Alarm_Minute increase with each button press
 Alarm_HMS = dt.time(Alarm_Hour, Alarm_Minute, 0)
 Alarm_Sound = 1
