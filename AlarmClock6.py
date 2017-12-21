@@ -11,20 +11,20 @@ print(On_Raspberry)
 
 if On_Raspberry:
     from Adafruit_LED_Backpack import SevenSegment
-    display = SevenSegment.SevenSegment()
-    display.begin()
-    display.clear()
-    display.write_display()
+    ssdisplay = SevenSegment.SevenSegment()
+    ssdisplay.begin()
+    ssdisplay.clear()
+    ssdisplay.write_display()
     print("SevenSegment Display Initiated")
 
 def DispPrint(disptext,rt_coln = True,lt_coln = False,dec = False):
     global On_Raspberry
     print(disptext,rt_coln,lt_coln,dec)
     if disptext == "clear":
-        display.clear()
+        ssdisplay.clear()
     else:
-        display.print_float(disptext)
-    display.write_display()
+        ssdisplay.print_float(disptext)
+    ssdisplay.write_display()
 
 DispPrint (12)
 
