@@ -24,7 +24,7 @@ def DispPrint(disptext,rt_coln = True,lt_coln = False,dec = False):
         if disptext == "blank":
             ssdisplay.clear()
         else:
-            ssdisplay.print_float(disptext)
+            ssdisplay.print_float(int(disptext))
         ssdisplay.write_display()
 
 
