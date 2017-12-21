@@ -20,11 +20,12 @@ if On_Raspberry:
 def DispPrint(disptext,rt_coln = True,lt_coln = False,dec = False):
     global On_Raspberry
     print("Display:", disptext,rt_coln,lt_coln,dec)
-    if disptext == "blank":
-        ssdisplay.clear()
-    else:
-        ssdisplay.print_float(disptext)
-    ssdisplay.write_display()
+    if On_Raspberry:
+        if disptext == "blank":
+            ssdisplay.clear()
+        else:
+            ssdisplay.print_float(disptext)
+        ssdisplay.write_display()
 
 
 init()
