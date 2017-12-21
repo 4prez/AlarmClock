@@ -20,11 +20,11 @@ if On_Raspberry:
 def DispPrint(disptext,rt_coln = True,lt_coln = False,dec = False):
     global On_Raspberry
     print(disptext,rt_coln,lt_coln,dec)
-        if disptext == "clear":
-            display.print_float(disptext)
-        else:
-            display.clear()
-        display.write_display()
+    if disptext == "clear":
+        display.print_float(disptext)
+    else:
+        display.clear()
+    display.write_display()
 
 DispPrint (12)
 
