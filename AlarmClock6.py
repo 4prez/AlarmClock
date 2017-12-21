@@ -19,18 +19,13 @@ if On_Raspberry:
 
 def DispPrint(disptext,rt_coln = True,lt_coln = False,dec = False):
     global On_Raspberry
-    print(disptext,rt_coln,lt_coln,dec)
-    if disptext == "clear":
+    print("Display:" disptext,rt_coln,lt_coln,dec)
+    if disptext == "blank":
         ssdisplay.clear()
     else:
         ssdisplay.print_float(disptext)
     ssdisplay.write_display()
 
-DispPrint (12)
-
-sleep(3)
-
-DispPrint ("clear")
 
 init()
 # set SDL to use the dummy NULL video driver, so it doesn't need a windowing system.
@@ -133,7 +128,7 @@ print("Raspberry GPIO setup as resquired")
 Exit_Now = False
 State = 0
 
-print("Display Off")
+DispPrint("blank")
 
 while not Exit_Now:
     ## pygame event loop to capture inputs
@@ -234,8 +229,8 @@ while not Exit_Now:
     if New_Input == "Short":
         if State == 0:  # Display is off
             State = 1
-            print(dt.datetime.now().strftime('%H:%M'))
-
+            # print(dt.datetime.now().strftime('%H:%M'))
+            DisPrint(dt.datetime.now().strftime('%H%M'))
         elif State == 1:  # Time is on
             print("Alarm is", Alarm_On)
             if Alarm_On == True:
