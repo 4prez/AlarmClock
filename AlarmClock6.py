@@ -14,13 +14,12 @@ if On_Raspberry:
     display = SevenSegment.SevenSegment()
     display.begin()
     display.clear()
-    display.write_Display()
+    display.write_display()
     print("SevenSegment Display Initiated")
 
 def DispPrint(disptext,rt_coln = True,lt_coln = False,dec = False):
     global On_Raspberry
     print(disptext,rt_coln,lt_coln,dec)
-    if On_Raspberry:
         if disptext == "clear":
             display.print_float(disptext)
         else:
