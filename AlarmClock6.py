@@ -254,7 +254,7 @@ while not Exit_Now:
                     State = 3
                 else:
                     print("Alarm is", Alarm_On)
-                    print(dt.datetime.now().strftime('%H:%M'))
+                    DispPrint(dt.datetime.now().strftime('%H.%M'))
                     State = 1
 
         elif State == 3:  # Edit Hour
@@ -263,11 +263,13 @@ while not Exit_Now:
                     Alarm_Hour = 0
                 else:
                     Alarm_Hour = Alarm_Hour + 1
-                print("Alarm hour", Alarm_Hour)
+                DispPrint([int(Alarm_Hour / 10), Alarm_Hour % 10, None, None])
+                # print("Alarm hour", Alarm_Hour)
             elif Key_Press == "L":
                 State = 4
                 # print(State)
-                print("Alarm minute", Alarm_Minute)
+                # print("Alarm minute", Alarm_Minute)
+                DispPrint([None, None,int(Alarm_Minute / 10), Alarm_Minute % 10])
 
 
         elif State == 4:  # Edit Minute
@@ -276,7 +278,8 @@ while not Exit_Now:
                     Alarm_Minute = 0
                 else:
                     Alarm_Minute = Alarm_Minute + Alarm_Minute_Increment
-                print("Alarm minute", Alarm_Minute)
+                DispPrint([None, None, int(Alarm_Minute / 10), Alarm_Minute % 10])
+                # print("Alarm minute", Alarm_Minute)
             elif Key_Press == "L":
                 State = 5
                 # print(State)
