@@ -28,6 +28,8 @@ def DispPrint(disptext,rt_coln = True,lt_coln = False,dec = False):
             ssdisplay.print_float(disptext)
             # ssdisplay.set_colon(rt_coln)
             # ssdisplay.set_left_colon(lt_coln)
+        elif disptext = "now":
+            ssdisplay.print_float(float(dt.datetime.now().strftime('%H.%M')))
         else:
             ssdisplay.clear()
         ssdisplay.write_display()
@@ -95,7 +97,7 @@ New_Input = False
 Key_Press = "None"
 Key_TimeStamp = dt.datetime.now()
 Key_Down_Stamp = dt.datetime(1970, 1, 1, 0, 0, 0, 0)
-TimeStamp_Check = dt.timedelta(seconds=6)  # inactive time for menu level reversion
+TimeStamp_Check = dt.timedelta(seconds=10)  # inactive time for menu level reversion
 
 if On_Raspberry:
     import RPi.GPIO as GPIO
@@ -134,7 +136,7 @@ print("Raspberry GPIO setup as resquired")
 Exit_Now = False
 State = 0
 
-DispPrint(1)
+DispPrint("blank")
 
 while not Exit_Now:
     ## pygame event loop to capture inputs
@@ -197,7 +199,7 @@ while not Exit_Now:
             DispPrint("blank")
         elif State >1: #(State > 10 or State == 6): # For old revert ladder
             State = 1
-            DispPrint(dt.datetime.now().strftime('%H.%M'))
+            DispPrint("now")
             # print(dt.datetime.now().strftime('%H:%M'))
             Menu_Revert_Time = dt.datetime.now() + TimeStamp_Check
         # elif State > 1:  # For old revert ladder
@@ -237,7 +239,7 @@ while not Exit_Now:
         if State == 0:  # Display is off
             State = 1
             # print(dt.datetime.now().strftime('%H:%M'))
-            DispPrint(float(dt.datetime.now().strftime('%H.%M')))
+            DispPrint("now")
         elif State == 1:  # Time is on
             print("Alarm is", Alarm_On)
             if Alarm_On == True:
