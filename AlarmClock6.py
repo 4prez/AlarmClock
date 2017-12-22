@@ -7,7 +7,7 @@ import sys
 
 On_Raspberry = not (sys.platform == 'win32') # determine if running on Windows or Pi (for inputs)
 # Set up GPIO if on Raspberry
-print(On_Raspberry)
+print("Running on Raspberry:",On_Raspberry)
 
 if On_Raspberry:
     from Adafruit_LED_Backpack import SevenSegment
@@ -26,7 +26,7 @@ def DispPrint(disptext,rt_coln = True,lt_coln = False,dec = False):
                 ssdisplay.set_digit(i, disptext[i])
         elif type(disptext).__name__ == 'float':
             ssdisplay.print_float(disptext)
-            # ssdisplay.set_colon(rt_coln)
+            ssdisplay.set_right_colon(rt_coln)
             # ssdisplay.set_left_colon(lt_coln)
         elif disptext == "now":
             ssdisplay.print_float(float(dt.datetime.now().strftime('%H.%M')))
