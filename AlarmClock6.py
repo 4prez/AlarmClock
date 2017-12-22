@@ -189,7 +189,7 @@ while not Exit_Now:
     if (State > 0 and dt.datetime.now() > Menu_Revert_Time):
         if State == 1:
             State = 0
-            DisPrint("blank")
+            DispPrint("blank")
         elif State >1: #(State > 10 or State == 6): # For old revert ladder
             State = 1
             print(dt.datetime.now().strftime('%H:%M'))
@@ -231,7 +231,7 @@ while not Exit_Now:
         if State == 0:  # Display is off
             State = 1
             # print(dt.datetime.now().strftime('%H:%M'))
-            DispPrint(dt.datetime.now().strftime('%H%M'))
+            DispPrint(dt.datetime.now().strftime('%H.%M'))
         elif State == 1:  # Time is on
             print("Alarm is", Alarm_On)
             if Alarm_On == True:
