@@ -25,6 +25,8 @@ def DispPrint(disptext,rt_coln = True,lt_coln = False,dec = False):
             ssdisplay.clear()
         else:
             ssdisplay.print_float(float(disptext))
+            ssdisplay.set_right_colon(rt_coln)
+            ssdisplay.set_left_colon(lt_coln)
         ssdisplay.write_display()
 
 
