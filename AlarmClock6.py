@@ -26,12 +26,12 @@ def DispPrint(disptext,rt_coln = True,lt_coln = False,dec = False):
                 ssdisplay.set_digit(i, disptext[i])
         elif type(disptext).__name__ == 'float':
             ssdisplay.print_float(disptext)
-            ssdisplay.set_right_colon(rt_coln)
-            # ssdisplay.set_left_colon(lt_coln)
         elif disptext == "now":
             ssdisplay.print_float(float(dt.datetime.now().strftime('%H.%M')))
         else:
             ssdisplay.clear()
+        ssdisplay.set_right_colon(rt_coln)
+        ssdisplay.set_left_colon(rt_coln)
         ssdisplay.write_display()
 
 
@@ -71,19 +71,19 @@ Sound_List =[]
 SoundBox_Path = (os.path.join(os.getcwd(),"Soundbox Sounds"))
 for files in os.listdir(SoundBox_Path):
     if files.endswith(".mp3"):
-        print(files)
+        # print(files)
         Sound_List.append(files)
 print(Sound_List)
-print (len(Sound_List))
+# print (len(Sound_List))
 
 Alarm_List =[]
 Alarm_Path = (os.path.join(os.getcwd(),"Alarm Sounds"))
 for files in os.listdir(Alarm_Path):
     if files.endswith(".mp3"):
-        print(files)
+        # print(files)
         Alarm_List.append(files)
 print(Alarm_List)
-print(len(Alarm_List))
+# print(len(Alarm_List))
 
 # Sound_List = ["Rain_thunder.mp3", "Sleeping-sounds.mp3", "260263__richardemoore__wavesontheshore.mp3",
 #               "262305__gowlermusic__summer-outside-ambience.mp3", "253770__corsica-s__forest-fire.mp3"]
