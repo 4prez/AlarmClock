@@ -24,7 +24,7 @@ def DispPrint(disptext,rt_coln = True,lt_coln = False,dec = False):
         if disptext == "blank":
             ssdisplay.clear()
         else:
-            ssdisplay.print_float(int(disptext))
+            ssdisplay.print_float(float(disptext))
         ssdisplay.write_display()
 
 
@@ -189,7 +189,7 @@ while not Exit_Now:
     if (State > 0 and dt.datetime.now() > Menu_Revert_Time):
         if State == 1:
             State = 0
-            print("Display Off")
+            DisPrint("blank")
         elif State >1: #(State > 10 or State == 6): # For old revert ladder
             State = 1
             print(dt.datetime.now().strftime('%H:%M'))
