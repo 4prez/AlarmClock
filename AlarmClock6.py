@@ -28,7 +28,7 @@ def DispPrint(disptext,rt_coln = True,lt_coln = False,dec = False):
             # ssdisplay.set_colon(rt_coln)
             # ssdisplay.set_left_colon(lt_coln)
         else:
-            for i in range (0,len(disptext)-1)
+            for i in range (0,len(disptext)-1):
                 ssdisplay.set_digit(i, disptext[i])
         ssdisplay.write_display()
 
