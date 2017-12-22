@@ -21,15 +21,15 @@ def DispPrint(disptext,rt_coln = True,lt_coln = False,dec = False):
     global On_Raspberry
     print("Display:", disptext,rt_coln,lt_coln,dec)
     if On_Raspberry:
-        if disptext == "blank":
-            ssdisplay.clear()
-        elif len(disptext)==1:
-            ssdisplay.print_float(float(disptext))
+        if type(disptext).__name__ == 'list':
+            for i in range (0,len(disptext)-1):
+                ssdisplay.set_digit(i, disptext[i])
+        elif type(disptext).__name__ == 'float':
+            ssdisplay.print_float(disptext)
             # ssdisplay.set_colon(rt_coln)
             # ssdisplay.set_left_colon(lt_coln)
         else:
-            for i in range (0,len(disptext)-1):
-                ssdisplay.set_digit(i, disptext[i])
+            ssdisplay.clear()
         ssdisplay.write_display()
 
 
