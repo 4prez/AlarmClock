@@ -388,3 +388,4 @@ sleep(1)
 
 if On_Raspberry == True:
     GPIO.cleanup()
+    DispPrint("blank")
