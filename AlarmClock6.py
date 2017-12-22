@@ -239,7 +239,7 @@ while not Exit_Now:
         if State == 0:  # Display is off
             State = 1
             # print(dt.datetime.now().strftime('%H:%M'))
-            DispPrint("now")
+            DispPrint("now", lt_coln=True)
         elif State == 1:  # Time is on
             print("Alarm is", Alarm_On)
             if Alarm_On == True:
