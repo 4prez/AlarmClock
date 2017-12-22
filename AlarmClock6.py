@@ -134,7 +134,7 @@ print("Raspberry GPIO setup as resquired")
 Exit_Now = False
 State = 0
 
-DispPrint("blank")
+DispPrint(1)
 
 while not Exit_Now:
     ## pygame event loop to capture inputs
