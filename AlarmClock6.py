@@ -23,10 +23,13 @@ def DispPrint(disptext,rt_coln = True,lt_coln = False,dec = False):
     if On_Raspberry:
         if disptext == "blank":
             ssdisplay.clear()
-        else:
+        elif len(disptext)==1:
             ssdisplay.print_float(float(disptext))
             # ssdisplay.set_colon(rt_coln)
             # ssdisplay.set_left_colon(lt_coln)
+        else:
+            for i in range (0,len(disptext)-1)
+                ssdisplay.set_digit(i, disptext[i])
         ssdisplay.write_display()
 
 
@@ -247,7 +250,7 @@ while not Exit_Now:
 
             elif Key_Press == "L":
                 if Alarm_On == True:
-                    print("Alarm hour", Alarm_Hour)
+                    DispPrint([int(Alarm_Hour / 10),Alarm_Hour % 10, None,None] )
                     State = 3
                 else:
                     print("Alarm is", Alarm_On)
