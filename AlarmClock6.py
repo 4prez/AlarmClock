@@ -22,7 +22,7 @@ def DispPrint(disptext,rt_coln = True,lt_coln = False,dec = False):
     print("Display:", disptext,rt_coln,lt_coln,dec)
     if On_Raspberry:
         if type(disptext).__name__ == 'list':
-            for i in range (0,len(disptext)-1):
+            for i in range (0,len(disptext)):
                 ssdisplay.set_digit(i, disptext[i])
         elif type(disptext).__name__ == 'float':
             ssdisplay.print_float(disptext)
@@ -197,7 +197,8 @@ while not Exit_Now:
             DispPrint("blank")
         elif State >1: #(State > 10 or State == 6): # For old revert ladder
             State = 1
-            print(dt.datetime.now().strftime('%H:%M'))
+            DispPrint(dt.datetime.now().strftime('%H.%M'))
+            # print(dt.datetime.now().strftime('%H:%M'))
             Menu_Revert_Time = dt.datetime.now() + TimeStamp_Check
         # elif State > 1:  # For old revert ladder
         #     Key_Press = "L"
@@ -236,7 +237,7 @@ while not Exit_Now:
         if State == 0:  # Display is off
             State = 1
             # print(dt.datetime.now().strftime('%H:%M'))
-            DispPrint(dt.datetime.now().strftime('%H.%M'))
+            DispPrint(float(dt.datetime.now().strftime('%H.%M')))
         elif State == 1:  # Time is on
             print("Alarm is", Alarm_On)
             if Alarm_On == True:
