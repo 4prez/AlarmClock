@@ -28,7 +28,7 @@ def DispPrint(disptext,rt_coln = True,lt_coln = False,dec = False):
             ssdisplay.print_float(disptext)
             # ssdisplay.set_colon(rt_coln)
             # ssdisplay.set_left_colon(lt_coln)
-        elif disptext = "now":
+        elif disptext == "now":
             ssdisplay.print_float(float(dt.datetime.now().strftime('%H.%M')))
         else:
             ssdisplay.clear()
