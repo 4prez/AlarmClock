@@ -5,42 +5,16 @@ from time import sleep
 import os
 import sys
 
+# Check if running on Pi (linux) vs windows (for development)
 On_Raspberry = not (sys.platform == 'win32') # determine if running on Windows or Pi (for inputs)
-# Set up GPIO if on Raspberry
 print("Running on Raspberry:",On_Raspberry)
-
-if On_Raspberry:
-    from Adafruit_LED_Backpack import SevenSegment
-    ssdisplay = SevenSegment.SevenSegment()
-    ssdisplay.begin()
-    ssdisplay.clear()
-    ssdisplay.write_display()
-    print("SevenSegment Display Initiated")
-
-def DispPrint(disptext,rt_coln = True,lt_coln = False,dec = False):
-    global On_Raspberry
-    print("Display:", disptext,rt_coln,lt_coln,dec)
-    if On_Raspberry:
-        if type(disptext).__name__ == 'list':
-            for i in range (0,len(disptext)):
-                ssdisplay.set_digit(i, disptext[i])
-        elif type(disptext).__name__ == 'float':
-            ssdisplay.print_float(disptext)
-        elif disptext == "now":
-            ssdisplay.print_float(float(dt.datetime.now().strftime('%H.%M')))
-        else:
-            ssdisplay.clear()
-        # ssdisplay.set_right_colon(rt_coln)
-        # ssdisplay.set_left_colon(rt_coln)
-        ssdisplay.write_display()
-
 
 init()
 # set SDL to use the dummy NULL video driver, so it doesn't need a windowing system.
 os.environ["SDL_VIDEODRIVER"] = "dummy"
 screen = display.set_mode((160, 160))
 
-print ("Pygame Initialized")
+print ("Pygame window initialized")
 
 # Default Alarm Setting
 Alarm_On = False
@@ -62,6 +36,14 @@ SBox_Duration_List = [5, 10, 20, 30, 45, 60, 120, 240]
 SBox_Start_Time = dt.datetime.now()
 SBox_End_Time = SBox_Start_Time + dt.timedelta(minutes=SBox_Duration)
 SBox_Playing = False
+Fade_Out_ms = 1000  # In milliseconds
+
+# Initiate key press variables / flags
+New_Input = False
+Key_Press = "None"
+Key_TimeStamp = dt.datetime.now()
+Key_Down_Stamp = dt.datetime(1970, 1, 1, 0, 0, 0, 0)
+TimeStamp_Check = dt.timedelta(seconds=10)  # inactive time for menu level reversion
 
 # Sound files
 # List of sound files (same for Alarm and Soundbox), need to be in the same directory as py file
@@ -71,35 +53,24 @@ Sound_List =[]
 SoundBox_Path = (os.path.join(os.getcwd(),"Soundbox Sounds"))
 for files in os.listdir(SoundBox_Path):
     if files.endswith(".mp3"):
-        print(files)
+        # print(files)
         Sound_List.append(files)
 # print(Sound_List)
-# print (len(Sound_List))
+print ("SoundBox files loaded:",len(Sound_List))
 
 Alarm_List =[]
 Alarm_Path = (os.path.join(os.getcwd(),"Alarm Sounds"))
 for files in os.listdir(Alarm_Path):
     if files.endswith(".mp3"):
-        print(files)
+        # print(files)
         Alarm_List.append(files)
 # print(Alarm_List)
-# print(len(Alarm_List))
+print("Alarm files loaded:",len(Alarm_List))
 
-# Sound_List = ["Rain_thunder.mp3", "Sleeping-sounds.mp3", "260263__richardemoore__wavesontheshore.mp3",
-#               "262305__gowlermusic__summer-outside-ambience.mp3", "253770__corsica-s__forest-fire.mp3"]
-
-Fade_Out_ms = 1000  # In milliseconds
-
-print ("Sound files loaded")
-
-# Initiate key press variables / flags
-New_Input = False
-Key_Press = "None"
-Key_TimeStamp = dt.datetime.now()
-Key_Down_Stamp = dt.datetime(1970, 1, 1, 0, 0, 0, 0)
-TimeStamp_Check = dt.timedelta(seconds=10)  # inactive time for menu level reversion
-
+## Setup GPIO for Raspberry - buttons, display
 if On_Raspberry:
+
+    ## Buttons
     import RPi.GPIO as GPIO
     GPIO.setmode(GPIO.BOARD)
     B_L = 16
@@ -130,9 +101,51 @@ if On_Raspberry:
     GPIO.add_event_detect(B_L, GPIO.BOTH, callback=callback_button)
     GPIO.add_event_detect(R_R, GPIO.BOTH, callback=callback_button)
 
-print("Raspberry GPIO setup as resquired")
+    ## SevenSegment Display
+    from Adafruit_LED_Backpack import SevenSegment
+    ssdisplay = SevenSegment.SevenSegment()
+    ssdisplay.begin()
+    ssdisplay.clear()
+    ssdisplay.write_display()
+    print("SevenSegment Display Initiated")
 
-## Initiate loop
+    ## LED wake
+
+    ## Distance
+
+    ## Light Sensor
+
+
+print("Raspberry GPIO setup as required")
+
+## Special print function for SevenSegment
+def DispPrint(disptext,lt_coln = False,rt_coln = True):
+    global On_Raspberry, Alarm_On
+    print("Display:", disptext,lt_coln, rt_coln, Alarm_On)
+    if On_Raspberry:
+        if type(disptext).__name__ == 'list':
+            for i in range (0,len(disptext)):
+                ssdisplay.set_digit(i, disptext[i])
+        elif type(disptext).__name__ == 'float':
+            ssdisplay.print_float(disptext)
+        elif type(disptext).__name__ == 'bool':
+            for i in range (0,4):
+                ssdisplay.set_digit(i, int(disptext[i]))
+        elif disptext == 'now':
+            ssdisplay.print_float(float(dt.datetime.now().strftime('%H.%M')))
+            print("imbedded now")
+            # print(dt.datetime.now().strftime('%H:%M'))
+            rt_coln = True
+            lt_coln = False
+        else:
+            ssdisplay.clear()
+            print("else-blank")
+        # ssdisplay.set_right_colon(rt_coln)
+        # ssdisplay.set_left_colon(rt_coln)
+        ssdisplay.set_fixed_decimal(Alarm_On)
+        ssdisplay.write_display()
+
+## Initiate main loop
 Exit_Now = False
 State = 0
 
@@ -173,8 +186,7 @@ while not Exit_Now:
         Alarm_Date_Offest = dt.timedelta(days=0)
     Current_Time = dt.datetime.now()
     Alarm_DateTime = dt.datetime(Current_Time.year, Current_Time.month, Current_Time.day, Alarm_Hour,
-                                       Alarm_Minute, 0) + \
-                     Alarm_Date_Offest
+                                       Alarm_Minute, 0) + Alarm_Date_Offest
     Alarm_HMS = Alarm_DateTime.strftime('%H:%M')
 
     ## Stop sounds
@@ -185,11 +197,13 @@ while not Exit_Now:
               dt.datetime.now() > SBox_End_Time)):
         mixer.music.fadeout(Fade_Out_ms)
         SBox_Playing = False
-        Alarm_Playing = False
-        Alarm_On = False
+        if Alarm_Playing == True:
+            Alarm_Playing = False
+            Alarm_On = False
         New_Input = False
         print("Sound Off")
         print(dt.datetime.now().strftime('%H:%M'))
+        DispPrint("now")
         State = 1
 
     ## With inactive time the menu reverts
@@ -230,6 +244,7 @@ while not Exit_Now:
                     SBox_Start_Time = dt.datetime.now()
                     SBox_End_Time = SBox_Start_Time + dt.timedelta(minutes=SBox_Duration)
                     print("Soundbox sound", SBox_Sound)
+                    DispPrint([int(SBox_Sound / 10), SBox_Sound % 10, None, None], lt_coln=True, rt_coln=False)
 
         elif Key_Press == "R":
             Exit_Now = True
@@ -239,17 +254,21 @@ while not Exit_Now:
         if State == 0:  # Display is off
             State = 1
             # print(dt.datetime.now().strftime('%H:%M'))
-            DispPrint("now", lt_coln=True)
+            DispPrint("now")
         elif State == 1:  # Time is on
-            print("Alarm is", Alarm_On)
-            if Alarm_On == True:
+            if Alarm_On == False:
+                print("Alarm is", Alarm_On)
+                DispPrint([int(Alarm_On), int(Alarm_On), int(Alarm_On), int(Alarm_On)], rt_coln=False, lt_coln=True)
+            elif Alarm_On == True:
                 print("Alarm time", Alarm_HMS)
+                DispPrint(Alarm_Hour+Alarm_Minute/100,lt_coln=True,rt_coln=True)
             State = 2
 
         elif State == 2:  # Toggle Alarm On/Off
             if Key_Press == "R":
                 Alarm_On = not Alarm_On
                 print("Alarm is", Alarm_On)
+                DispPrint([int(Alarm_On),int(Alarm_On),int(Alarm_On),int(Alarm_On)],rt_coln=False,lt_coln=True)
 
             elif Key_Press == "L":
                 if Alarm_On == True:
@@ -257,7 +276,7 @@ while not Exit_Now:
                     State = 3
                 else:
                     print("Alarm is", Alarm_On)
-                    DispPrint(dt.datetime.now().strftime('%H.%M'))
+                    DispPrint("now")
                     State = 1
 
         elif State == 3:  # Edit Hour
@@ -266,13 +285,13 @@ while not Exit_Now:
                     Alarm_Hour = 0
                 else:
                     Alarm_Hour = Alarm_Hour + 1
-                DispPrint([int(Alarm_Hour / 10), Alarm_Hour % 10, None, None])
+                DispPrint([int(Alarm_Hour / 10), Alarm_Hour % 10, None, None],rt_coln=True)
                 # print("Alarm hour", Alarm_Hour)
             elif Key_Press == "L":
                 State = 4
                 # print(State)
                 # print("Alarm minute", Alarm_Minute)
-                DispPrint([None, None,int(Alarm_Minute / 10), Alarm_Minute % 10])
+                DispPrint([None, None,int(Alarm_Minute / 10), Alarm_Minute % 10],rt_coln=True)
 
 
         elif State == 4:  # Edit Minute
@@ -281,12 +300,13 @@ while not Exit_Now:
                     Alarm_Minute = 0
                 else:
                     Alarm_Minute = Alarm_Minute + Alarm_Minute_Increment
-                DispPrint([None, None, int(Alarm_Minute / 10), Alarm_Minute % 10])
+                DispPrint([None, None, int(Alarm_Minute / 10), Alarm_Minute % 10],rt_coln=True)
                 # print("Alarm minute", Alarm_Minute)
             elif Key_Press == "L":
                 State = 5
                 # print(State)
                 print("Alarm sound", Alarm_Sound)
+                DispPrint([int(Alarm_Sound / 10), Alarm_Sound % 10, None, None],rt_coln=False,lt_coln=True)
                 if Alarm_Sample:
                     mixer.music.fadeout(Fade_Out_ms)
 
@@ -302,10 +322,12 @@ while not Exit_Now:
                     mixer.music.set_volume(Alarm_Volume / 5.)
                     mixer.music.play(-1)
                 print("Alarm sound", Alarm_Sound)
+                DispPrint([int(Alarm_Sound / 10), Alarm_Sound % 10, None, None], rt_coln=False, lt_coln=True)
             elif Key_Press == "L":
                 State = 6
                 # print(State)
                 print("Alarm volume", Alarm_Volume, "of 5")
+                DispPrint([None, None,Alarm_Volume,None], rt_coln=False, lt_coln=True)
 
         elif State == 6:  # Edit volume
             if Key_Press == "R":
@@ -318,6 +340,7 @@ while not Exit_Now:
                     mixer.music.set_volume(Alarm_Volume / 5.)
                     mixer.music.unpause()
                 print("Alarm volume", Alarm_Volume, "of 5")
+                DispPrint([None, None, Alarm_Volume, None], lt_coln=True, rt_coln=False)
             elif Key_Press == "L":
                 State = 1
                 # print(State)
@@ -325,6 +348,7 @@ while not Exit_Now:
                 print("Alarm time", Alarm_HMS)
                 print("Alarm sound", Alarm_Sound)
                 print("Alarm volume is", Alarm_Volume, "of 5")
+                DispPrint(Alarm_Hour+Alarm_Minute/100, lt_coln=True, rt_coln=True)
                 if Alarm_Sample:
                     mixer.music.fadeout(Fade_Out_ms)
 
@@ -335,6 +359,7 @@ while not Exit_Now:
                 else:
                     SBox_Sound = SBox_Sound + 1
                 print("Soundbox sound", SBox_Sound)
+                DispPrint([int(SBox_Sound / 10), SBox_Sound % 10, None, None], rt_coln=False, lt_coln=True)
                 mixer.music.load(os.path.join(SoundBox_Path, Sound_List[SBox_Sound - 1]))
                 mixer.music.set_volume(SBox_Volume / 5.)
                 mixer.music.play(-1)
@@ -344,6 +369,7 @@ while not Exit_Now:
                 State = 12
                 # print(State)
                 print("Soundbox volume", SBox_Volume, "of 5")
+                DispPrint([None, None, SBox_Volume, None], rt_coln=False, lt_coln=True)
 
         elif State == 12:  # Soundbox Volume
             if Key_Press == "R":
@@ -355,10 +381,16 @@ while not Exit_Now:
                 mixer.music.set_volume(SBox_Volume / 5.)
                 mixer.music.unpause()
                 print("Soundbox volume", SBox_Volume, "of 5")
+                DispPrint([None, None, SBox_Volume, None], rt_coln=False, lt_coln=True)
             elif Key_Press == "L":
                 State = 13
                 # print(State)
                 print("Soundbox duration is", SBox_Duration_List[SBox_Duration], "min")
+                sbd = SBox_Duration_List[SBox_Duration]
+                sbd_h = int(sbd/60)
+                sbd_m = sbd - sbd_h*60
+                sbd_hm = float(sbd_h+sbd_m/100)
+                DispPrint(sbd_hm, rt_coln=True)
 
         elif State == 13:  # Soundbox Duration
             if Key_Press == "R":
@@ -367,10 +399,16 @@ while not Exit_Now:
                 else:
                     SBox_Duration = SBox_Duration + 1
                 print("Soundbox duration is", SBox_Duration_List[SBox_Duration], "min")
+                sbd = SBox_Duration_List[SBox_Duration]
+                sbd_h = int(sbd / 60)
+                sbd_m = sbd - sbd_h * 60
+                sbd_hm = float(sbd_h + sbd_m / 100)
+                DispPrint(sbd_hm, rt_coln=True)
                 SBox_End_Time = SBox_Start_Time + dt.timedelta(minutes=SBox_Duration_List[SBox_Duration])
             elif Key_Press == "L":
                 State = 11
                 print("Soundbox sound", SBox_Sound)
+                DispPrint([int(SBox_Sound / 10), SBox_Sound % 10, None, None], rt_coln=False, lt_coln=True)
 
     New_Input = False
 
