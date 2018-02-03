@@ -73,7 +73,7 @@ if On_Raspberry:
     ## Buttons
     import RPi.GPIO as GPIO
     GPIO.setmode(GPIO.BOARD)
-    B_L = 16
+    B_L = 18
     R_R = 12
     GPIO.setup(B_L, GPIO.IN, pull_up_down=GPIO.PUD_UP)
     GPIO.setup(R_R, GPIO.IN, pull_up_down=GPIO.PUD_UP)
@@ -141,7 +141,10 @@ def DispPrint(disptext,lt_coln = False,rt_coln = True):
             ssdisplay.clear()
             print("else-blank")
         # ssdisplay.set_right_colon(rt_coln)
-        # ssdisplay.set_left_colon(rt_coln)
+        # ssdisplay.set_left_colon(lt_coln)
+        # ssdisplay.writeDigitRaw(2, 0x02) #rt colon
+        # ssdisplay.writeDigitRaw(2, 0x08) # upper left colon
+        # ssdisplay.writeDigitRaw(2, 0x04) # lower left colon
         ssdisplay.set_fixed_decimal(Alarm_On)
         ssdisplay.write_display()
 
@@ -435,4 +438,5 @@ sleep(1)
 
 if On_Raspberry == True:
     GPIO.cleanup()
-    DispPrint("blank")
+    ssdisplay.clear()
+    ssdisplay.write_display()
