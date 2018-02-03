@@ -73,8 +73,8 @@ if On_Raspberry:
     ## Buttons
     import RPi.GPIO as GPIO
     GPIO.setmode(GPIO.BOARD)
-    B_L = 22
-    R_R = 16
+    B_L = 13
+    R_R = 11
     GPIO.setup(B_L, GPIO.IN, pull_up_down=GPIO.PUD_UP)
     GPIO.setup(R_R, GPIO.IN, pull_up_down=GPIO.PUD_UP)
     B_L_Status = 1
