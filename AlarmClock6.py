@@ -55,7 +55,7 @@ for files in os.listdir(SoundBox_Path):
     if files.endswith(".mp3"):
         # print(files)
         Sound_List.append(files)
-# print(Sound_List)
+print(Sound_List)
 print ("SoundBox files loaded:",len(Sound_List))
 
 Alarm_List =[]
@@ -64,7 +64,7 @@ for files in os.listdir(Alarm_Path):
     if files.endswith(".mp3"):
         # print(files)
         Alarm_List.append(files)
-# print(Alarm_List)
+print(Alarm_List)
 print("Alarm files loaded:",len(Alarm_List))
 
 ## Setup GPIO for Raspberry - buttons, display
